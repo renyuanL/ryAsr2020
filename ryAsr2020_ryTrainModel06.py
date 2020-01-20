@@ -130,21 +130,26 @@ y_test_all=  y_test
 
 ryGscList=[ 
  '_silence_',
+ 
  'one',  'two', 'three', 'four', 'five',
  'six', 'seven', 'eight', 'nine', 'zero',
+ 
  'yes', 'no',
  'go', 'stop',
  'on', 'off',
  'up', 'down',
  'left', 'right',
  'forward', 'backward',
+ 
  'marvin', 'sheila',
  'dog', 'cat',
  'bird', 'bed',
  'happy', 'house',
  'learn', 'follow',
  'tree', 'visual',
- 'wow'
+ 'wow',
+ 
+ '_unknown_'
  ]
 
 
@@ -176,6 +181,50 @@ cL= sorted(aL, key= lambda x:-x[2])
 
 
 aL
+_='''
+aL
+Out[49]: 
+[(0, '_silence_', 402),
+ (1, 'one', 3890),
+ (2, 'two', 3880),
+ (3, 'three', 3727),
+ (4, 'four', 3728),
+ (5, 'five', 4052),
+ (6, 'six', 3860),
+ (7, 'seven', 3998),
+ (8, 'eight', 3787),
+ (9, 'nine', 3934),
+ (10, 'zero', 4052),
+ (11, 'yes', 4044),
+ (12, 'no', 3941),
+ (13, 'go', 3880),
+ (14, 'stop', 3872),
+ (15, 'on', 3845),
+ (16, 'off', 3745),
+ (17, 'up', 3723),
+ (18, 'down', 3917),
+ (19, 'left', 3801),
+ (20, 'right', 3778),
+ (21, 'forward', 1557),
+ (22, 'backward', 1664),
+ 
+ (23, 'marvin', 2100),
+ (24, 'sheila', 2022),
+ (25, 'dog', 2128),
+ (26, 'cat', 2031),
+ (27, 'bird', 2064),
+ (28, 'bed', 2014),
+ (29, 'happy', 2054),
+ (30, 'house', 2113),
+ (31, 'learn', 1575),
+ (32, 'follow', 1579),
+ (33, 'tree', 1759),
+ (34, 'visual', 1592),
+ (35, 'wow', 2123),
+ 
+ (36, '_unknown_', 0)]
+
+'''
 
 
 # In[7]:
@@ -184,16 +233,16 @@ aL
 # 設定 3個子集合(Dgt, Yes, Oth)，以及全部(All)。
 
 #  Dgt= 10 個數字
-CmdList= DgtList=  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+DgtList=  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-# Yes= 10 個 Cmd，    「是、否、去、停、 開、關、上、下、  左、右」。
-CmdList= YesList=  [0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+# Yes= 12 個 Cmd，    「是、否、去、停、 開、關、上、下、  左、右、前、後」。
+YesList=  [0, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 
-# 其他 15 個。
-CmdList= OthList= [ 0, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+# 其他 13 個。 + 1 個 0:"_silence_", 1 個 36:"_unknown_" 
+OthList= [0, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
 
-# 總共 10 + 10 + 15 == 35
-CmdList= AllList= list(range(0,36))
+# 總共 10 + 12 + 13 == 35 +1 (_silence_) +1 (_unknown_)
+AllList= list(range(len(ryGscList)))
 
 
 # In[8]:
@@ -202,18 +251,26 @@ CmdList= AllList= list(range(0,36))
 # 選好 CmdList 即可完整跑到底....
 # Dgt 辨識率最高，可先選來做做看
 
-#CmdList= DgtList
-#CmdList= YesList
+#CmdList=   DgtList
+#CmdList=   YesList
 #CmdList= OthList
-CmdList= AllList
+#CmdList= AllList
 
-CmdList= np.array(CmdList)
+#CmdList= sorted(list(set(CmdList))) # 去掉重複的。
+
+#UnkList= sorted(list(set(AllList)-set(CmdList)))
+
+CmdSet = set(DgtList).union(set(YesList))
+UnkSet = set(AllList)-CmdSet
+
+CmdList= np.array(sorted(CmdSet))
+UnkList= np.array(sorted(UnkSet))
 
 
 # In[9]:
 
 
-
+'''
 # 選擇 子集合來建立 模型
 
 s_trainCmd= np.isin(y_train_all, CmdList)
@@ -228,22 +285,38 @@ y_valCmd=   y_val_all[s_valCmd]
 
 x_testCmd=  x_test_all[s_testCmd]
 y_testCmd=  y_test_all[s_testCmd]
+'''
+
+''' 這裡嘗試建立 _unknown_ 略可，但還不大好設計......
+y_trainCmd[y_trainCmd>=21]= 0 # which is "_unknown_"
+y_valCmd[y_valCmd>=21]=     0
+y_testCmd[y_testCmd>=21]=   0
+'''
 
 # 把 label 從 0, 1, 2,... 降到 0, 1, 2,....
 # 對 Dgt 子集合而言，不做沒關係，但 Yes, Oth 都必須做，因此一視同仁通通做吧。
 #
+'''
 CmdDict= dict([(v,k) for k,v in enumerate(CmdList)])
 
 y_train= np.array([CmdDict[x] for x in y_trainCmd])
 y_val=   np.array([CmdDict[x] for x in y_valCmd])
 y_test=  np.array([CmdDict[x] for x in y_testCmd])
-
+'''
 
 # 選擇 語音資料子集合來建立 模型
 
-x_train=    x_trainCmd    
-x_val=      x_valCmd
-x_test=     x_testCmd
+
+x_train=    x_train_all   
+x_val=      x_val_all
+x_test=     x_test_all
+
+
+y_train[np.isin(y_train_all, UnkList)]= 23 # which is "marvin"
+y_val[  np.isin(y_val_all,   UnkList)]= 23 # which is "marvin"
+y_test[ np.isin(y_test_all,  UnkList)]= 23 # which is "marvin"
+
+ryGscList[23]= '_unknown_'  ### rename "marvin" as "_unknown_"
 
 
 # In[10]:
@@ -266,10 +339,10 @@ print(f'nCategs= {nCategs}')
 def ryFeature(x, 
            sample_rate= 16000, 
            
-           frame_length=  256, #1024,
+           frame_length=  512, #1024,
            frame_step=    160, #128,  # frame_length//2
            
-           num_mel_bins=     256//8, #32, #100,   #128,
+           num_mel_bins=     512//8, #32, #100,   #128,
            lower_edge_hertz=   0,     # 0
            upper_edge_hertz= 16000/2, # sample_rate/2   
            
@@ -599,7 +672,8 @@ prob= m.predict(X)[0]
 sortIndex=  prob.argsort()[-1::-1]
 sortProb=   prob[sortIndex]
 
-sortPred=    np.array(ryGscList)[CmdList[sortIndex]] ## 這行有點錯綜複雜！！
+#sortPred=    np.array(ryGscList)[CmdList[sortIndex]] ## 這行有點錯綜複雜！！
+sortPred=    np.array(ryGscList)[sortIndex] ## 這行有點錯綜複雜！！
 
 print(f'sortPred= {sortPred}') # topN recognition result
 print(f'sortProb= {sortProb}')
@@ -691,7 +765,7 @@ def recWav(x, probOut= False): #, indexMapping= None):
     
     #if indexMapping != None:
     #    index= indexMapping[index]
-    index= CmdList[index]    
+    #####index= CmdList[index]    
     
     y= labels[index]
     
@@ -707,13 +781,9 @@ def recWav(x, probOut= False): #, indexMapping= None):
 
 T=  1     # Duration of recording
 fs= 16000  # Sample rate
+
 def speak_and_recognize():
-    print(f'''
-    press a key to record 1 sec of speech ...
-    you can say: {labels[CmdList]}
-    please say it within 1 sec...
-    ''')
-    input() 
+
     x= sd.rec(int(T*fs), 
             samplerate= fs, 
             channels= 1, 
@@ -725,7 +795,18 @@ def speak_and_recognize():
 
     print('y= {}'.format(y))
 
-for i in range(10):
+print(f'''
+press 'q' to quit 
+or another key to record 1 sec of speech ...
+you can say anyword in the list: 
+{labels[CmdList]}
+''')
+
+for i in range(100):
+
+    aKey= input() 
+    if aKey=='q': break
+
     speak_and_recognize()
 
 
