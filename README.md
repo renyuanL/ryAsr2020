@@ -14,7 +14,11 @@ https://github.com/renyuanL/ryAsr2020
 3. 若發現缺少啥 模組， 就 pip install 啥模組，直到能跑
 
 PS: 麥可風要先接好....
+
 -----------------------
+
+簡要說明
+========
 
 1. 從Internet 撈 Data，並整理成方便使用的格式：
 
@@ -26,4 +30,14 @@ PS: 麥可風要先接好....
 
 3. do Automatic Speech Recognition (ASR)
 
-    "ryAsr2020_ryTrainModel.hdf5" ==> ryRealTimeAsr06.py ==> "Results of ASR "
+    "ryAsr2020_ryTrainModel.hdf5" ==> ryRecog06.py  ==> "Results of ASR "
+    
+4. play with ASR in Real-time
+
+    "ryAsr2020_ryTrainModel.hdf5" 
+    ==> 
+    ryRealTimeAsr06.py
+    ryRealTimeAsr06_spaceInvader.py
+    ryRealTimeAsr06_threading.py
+
+
