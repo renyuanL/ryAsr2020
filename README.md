@@ -36,8 +36,8 @@ PS: 麥可風要先接好....
 
     "ryAsr2020_ryTrainModel.hdf5" 
     ==> 
-    ryRealTimeAsr06.py
-    ryRealTimeAsr06_spaceInvader.py
-    ryRealTimeAsr06_threading.py
+    01. ryRealTimeAsr06.py
+    02. ryRealTimeAsr06_spaceInvader.py
+    03. ryRealTimeAsr06_threading.py
 
 
