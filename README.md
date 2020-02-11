@@ -24,6 +24,18 @@ PS: 麥可風要先接好....
    ( 這個過程目前很耗時，但還好做一次就好，希望能改善，並嘗試增加本地的語言的語音資料。)
 
     "Internet" ==> ryPrepareDataset03.py  ==> "gscV2_data.npz" (a big speech data file)
+    
+    PS: 目前在 RAM= 16G bytes 的 office桌機跑有 MemoryError
+    
+     84849/84849 [51:50<00:00, 27.28it/s]
+        Traceback (most recent call last):
+          File "ryPrepareDataset03.py", line 299, in <module>
+            xL= np.vstack(xL)
+          File "C:\Anaconda3_2019.10\lib\site-packages\numpy\core\shape_base.py", line 283, in vstack
+            return _nx.concatenate([atleast_2d(_m) for _m in tup], 0)
+        【MemoryError】
+    
+    PS: RAM= 32G bytes 的 Home桌機 OK!!
 
 2. Train a model
     ( 目前使用22個英文關鍵詞，辨識率大約 80%，改善空間仍然很大) 
